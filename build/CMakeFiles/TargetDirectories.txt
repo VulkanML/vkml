@@ -1,0 +1,12 @@
+D:/source/vkml/build/CMakeFiles/intrinsics_gen.dir
+D:/source/vkml/build/CMakeFiles/omp_gen.dir
+D:/source/vkml/build/CMakeFiles/acc_gen.dir
+D:/source/vkml/build/CMakeFiles/ARMTargetParserTableGen.dir
+D:/source/vkml/build/CMakeFiles/AArch64TargetParserTableGen.dir
+D:/source/vkml/build/CMakeFiles/RISCVTargetParserTableGen.dir
+D:/source/vkml/build/CMakeFiles/mlir-tablegen-targets.dir
+D:/source/vkml/build/CMakeFiles/mlir-headers.dir
+D:/source/vkml/build/CMakeFiles/mlir-generic-headers.dir
+D:/source/vkml/build/CMakeFiles/mlir-doc.dir
+D:/source/vkml/build/CMakeFiles/ALL_BUILD.dir
+D:/source/vkml/build/CMakeFiles/ZERO_CHECK.dir
