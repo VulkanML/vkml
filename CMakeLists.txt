@@ -1,11 +1,14 @@
 cmake_minimum_required(VERSION 3.12)
 
-
 project(vkml-mlir LANGUAGES CXX C)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 unset(LLVM_DIR CACHE)
 unset(MLIR_DIR CACHE)
+
+
+add_subdirectory(ext/kompute)
+
 
 set(MLIR_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../llvm-project/build/lib/cmake/mlir)
 set(LLVM_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../llvm-project/build/lib/cmake/llvm)
@@ -33,7 +36,6 @@ include(TableGen)
 include(AddLLVM)
 include(AddMLIR)
 set(BACKEND_PACKAGE_STRING "LLVM ${LLVM_PACKAGE_VERSION}")
-
 
 set(VKML_MLIR_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(VKML_MLIR_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
@@ -66,6 +68,17 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/build_tools/cmake)
 include(TableGen)
 include(AddLLVM)
 include(AddMLIR)
+
+option(KOMPUTE_OPT_FROM_SOURCE "Whether to build example from source or from git fetch repo" ON)
+set(VKML_MLIR_LIBRARIES 
+  MLIRIR
+  MLIRPass
+  MLIRTransforms
+  MLIRGPUDialect
+  SPIRV
+)
+  
+
 
 
 add_subdirectory(include)
