@@ -6,9 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 unset(LLVM_DIR CACHE)
 unset(MLIR_DIR CACHE)
 
-
-add_subdirectory(ext/kompute)
-
+add_subdirectory(ext/kompute _deps EXCLUDE_FROM_ALL )
 
 set(MLIR_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../llvm-project/build/lib/cmake/mlir)
 set(LLVM_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../llvm-project/build/lib/cmake/llvm)
@@ -70,7 +68,7 @@ include(AddLLVM)
 include(AddMLIR)
 
 option(KOMPUTE_OPT_FROM_SOURCE "Whether to build example from source or from git fetch repo" ON)
-set(VKML_MLIR_LIBRARIES 
+set(MLIR_DEPS_LIBS
   MLIRIR
   MLIRPass
   MLIRTransforms
@@ -83,7 +81,6 @@ set(VKML_MLIR_LIBRARIES
 
 add_subdirectory(include)
 add_subdirectory(lib)
-add_subdirectory(tools)
 
 add_subdirectory(test)
 

@@ -4,14 +4,14 @@
 
 namespace vkrt{
     class rt{
-        kp::Manager mgr;
+        kp::Manager _global_mgr;
 
         static std::shared_ptr<rt> instance;
-        rt() : mgr(){
+        rt() : _global_mgr(){
             
         }
         ~rt(){
-            mgr.destroy();
+            _global_mgr.destroy();
         }
     public:
         static std::shared_ptr<rt> get_instance(){
