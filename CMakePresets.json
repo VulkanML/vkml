@@ -1,9 +1,8 @@
 {
-    "version": 8,
+    "version": 3,
     "configurePresets": [
         {
-            "name": "win",
-            "displayName": "amd64",
+            "name": "win64",
             "description": "Using compilers for Visual Studio 17 2022 (x64 architecture)",
             "generator": "Visual Studio 17 2022",
             "toolset": "host=x64",
@@ -18,9 +17,8 @@
     ],
     "buildPresets": [
         {
-            "name": "win-debug",
-            "displayName": "amd64-Debug",
-            "configurePreset": "win",
+            "name": "win64-debug",
+            "configurePreset": "win64",
             "configuration": "Debug"
         }
     ]
