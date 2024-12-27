@@ -2,14 +2,7 @@
 //
 
 #include "vkml.h"
-#include "mlir/Dialect/SPIRV/SPIRVDialect.h"
-#include "mlir/Dialect/SPIRV/SPIRVPasses.h"
 
-
-void registerDialects(mlir::DialectRegistry &registry)
-{
-     registry.insert<mlir::spirv::SPIRVDialect>();
-}
 
 
 using namespace std;

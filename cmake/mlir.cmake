@@ -13,10 +13,10 @@ file( DOWNLOAD "https://github.com/llvm/llvm-project/releases/download/llvmorg-$
     message(STATUS " MLIR Extraction done")
 endif()
 
-if(NOT EXISTS ${MLIR_DIR})
+if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/mlir/_install/lib/cmake/mlir)
 	execute_process(COMMAND ${CMAKE_COMMAND} -G ${CMAKE_GENERATOR} ${CMAKE_CURRENT_SOURCE_DIR}/mlir -DCMAKE_PREFIX_PATH=${CMAKE_CURRENT_SOURCE_DIR}/llvm/_install -DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_SOURCE_DIR}/mlir/_install WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/mlir/_build)
 	execute_process(COMMAND ${CMAKE_COMMAND} --build . --target install --parallel WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/mlir/_build)	
 	message(STATUS " MLIR Building done")
 endif()
 
-set(MLIR_DIR ${CMAKE_CURRENT_SOURCE_DIR}/mlir/_install/lib/cmake/mlir CACHE STRING "File path to mlir dir")
+
