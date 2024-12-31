@@ -34,9 +34,7 @@
 # Development folders
 build
 out
-llvm*
-mlir*
-cmake/Modules/
+*.inc
 .vs/
 .vscode/
 
