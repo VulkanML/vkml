@@ -19,8 +19,10 @@ if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/out/llvm/_build)
 	message(STATUS " LLVM file processing done")
 endif()
 
-if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/out/llvm/_build/lib/cmake/llvm)
+
+if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/out/llvm/_build/CMakeCache.txt)
 	execute_process(COMMAND ${CMAKE_COMMAND} -G ${CMAKE_GENERATOR} ${CMAKE_CURRENT_SOURCE_DIR}/out/llvm
+		-T host=x64 -A x64
 		-DCMAKE_BUILD_TYPE=Release
 		-DLLVM_INCLUDE_TESTS=OFF
 		-DLLVM_INCLUDE_RUNTIMES=OFF
@@ -37,9 +39,11 @@ if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/out/llvm/_build/lib/cmake/llvm)
 		-DLLVM_ENABLE_BACKTRACES=OFF
 		-DLLVM_ENABLE_ASSERTIONS=OFF
 		-DLLVM_BUILD_INSTRUMENTED_COVERAGE=OFF
+		-DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_SOURCE_DIR}/out/llvm/_build
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/out/llvm/_build
 	)
-	execute_process(COMMAND ${CMAKE_COMMAND} --build . --target install --parallel WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/out/llvm/_build)
+	execute_process(COMMAND ${CMAKE_COMMAND} --build . --target install --config Release --parallel WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/out/llvm/_build)
+	execute_process(COMMAND ${CMAKE_COMMAND} --build . --target install --config Debug --parallel WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/out/llvm/_build)
 
 	message(STATUS " LLVM Building done")
 endif()

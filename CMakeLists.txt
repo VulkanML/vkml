@@ -3,14 +3,15 @@
 #
 cmake_minimum_required (VERSION 3.12)
 
-project ("vkml")
+project ("vkml" VERSION 0.1 LANGUAGES C CXX)
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
   cmake_policy(SET CMP0141 NEW)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
-option(TOOLS "ENABLE TESTING" OFF)
+option(TOOLS "ENABLE TESTING" ON)
+
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -30,54 +31,28 @@ if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/out/cmake/Modules)
 	message(STATUS " cmake file processing done")
 endif()
 
+include(cmake/llvm-project.cmake)
 
-include(cmake/mlir.cmake)
+set(LLVM_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/out/llvm-project/_build/include CACHE PATH "Path to MLIR includes" FORCE)
+set(LLVM_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/out/llvm-project/include CACHE PATH "Path to LLVM include" FORCE)
+set(LLVM_MAIN_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/out/llvm-project CACHE PATH "Path to LLVM source" FORCE)
+set(LLVM_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/out/llvm-project/_build/Release/lib CACHE PATH "Path to LLVM lib" FORCE)
 
-set(LLVM_DIR ${CMAKE_CURRENT_SOURCE_DIR}/out/llvm/_build/lib/cmake/llvm CACHE PATH "Path to LLVM CMake files" FORCE)
-set(MLIR_DIR ${CMAKE_CURRENT_SOURCE_DIR}/out/mlir/_build/lib/cmake/mlir CACHE PATH "Path to MLIR CMake files" FORCE)
-set(TABLEGEN_EXE ${CMAKE_CURRENT_SOURCE_DIR}/out/mlir/_build/bin/Debug/mlir-tblgen.exe CACHE FILEPATH "Path to mlir-tblgen" FORCE)
-
-set(LLVM_MAIN_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/out/llvm CACHE PATH "Path to LLVM source" FORCE)
-set(LLVM_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/out/llvm/include CACHE PATH "Path to LLVM include" FORCE)
-set(LLVM_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/out/llvm/_build/lib CACHE PATH "Path to LLVM lib" FORCE)
-set(MLIR_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/out/mlir/include CACHE PATH "Path to MLIR include" FORCE)
-set(MLIR_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/out/mlir/_build/lib CACHE PATH "Path to MLIR lib" FORCE)
-set(MLIR_MAIN_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/out/mlir CACHE PATH "Path to MLIR source" FORCE)
-
+file(GLOB_RECURSE _LIBS CONFIGURE_DEPENDS "${LLVM_LIB_DIR}/*/Release/*.lib" )
+set(COMPILER_INCLUDE_DIRS ${LLVM_INCLUDE_DIR} ${LLVM_INCLUDE_DIRS})
+file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "include/*.h" "include/*.hpp" )
+set(VKML_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/compiler/include)
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${HEADERS})
+file(GLOB_RECURSE SOURCE CONFIGURE_DEPENDS "lib/*.cpp" )
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCE})
 
 add_subdirectory(compiler)
-add_subdirectory(include)
-add_subdirectory(lib)
+add_library(vkml_lib STATIC ${HEADERS} ${SOURCE})
+target_include_directories(vkml_lib PUBLIC ${VKML_INCLUDE_DIRS} ${COMPILER_INCLUDE_DIRS})
+add_dependencies(vkml_lib vkml_mlir_compiler_static)
+target_link_libraries(vkml_lib PUBLIC vkml_mlir_compiler_static)
 
 
-if(NOT LLVM_INSTALL_TOOLCHAIN_ONLY)
-	install(DIRECTORY include/vkml-mlir 
-			DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-			COMPONENT vkml-mlir-headers
-			FILES_MATCHING
-			PATTERN "*.def"
-			PATTERN "*.h"
-			PATTERN "*.inc"
-			PATTERN "*.td"
-			PATTERN "LICENSE.TXT"
-	)
-	install(DIRECTORY ${VKML_MLIR_BINARY_DIR}/include/vkml-mlir
-			DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-			COMPONENT vkml-mlir-headers
-			FILES_MATCHING
-			PATTERN "*.def"
-			PATTERN "*.h"
-			PATTERN "*.gen"
-			PATTERN "*.inc"
-			PATTERN "*.td"
-			PATTERN "CMakeFiles" EXCLUDE
-			PATTERN "config.h" EXCLUDE
-	)
-
-	if(NOT LLVM_ENABLE_IDE)
-		add_llvm_install_targets(install-vkml-mlir-headers
-				DEPENDS vkml-mlir-headers
-				COMPONENT vkml-mlir-headers
-		)
-	endif()
-endif()
+add_executable(dev dev/main.cpp)
+target_include_directories(dev PRIVATE ${VKML_INCLUDE_DIRS} ${COMPILER_INCLUDE_DIRS})
+target_link_libraries(dev PRIVATE vkml_lib)

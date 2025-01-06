@@ -15,16 +15,19 @@ file( DOWNLOAD "https://github.com/llvm/llvm-project/releases/download/llvmorg-$
 	message(STATUS " MLIR file processing done")
 endif()
 
-if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/out/mlir/_build/lib/cmake/mlir)
+if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/out/mlir/_build/CMakeCache.txt)
 	execute_process(COMMAND ${CMAKE_COMMAND} -G ${CMAKE_GENERATOR} ${CMAKE_CURRENT_SOURCE_DIR}/out/mlir 
 		-DCMAKE_BUILD_TYPE=Release
 		-DCMAKE_PREFIX_PATH=${CMAKE_CURRENT_SOURCE_DIR}/out/llvm/_build
 		-DMLIR_ENABLE_DIALECT_STANDARD=ON
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/out/mlir/_build)
-	execute_process(COMMAND ${CMAKE_COMMAND} --build . --target mlir-tblgen --parallel WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/out/mlir/_build)	
-	execute_process(COMMAND ${CMAKE_COMMAND} --build . --target mlir-opt --parallel WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/out/mlir/_build)	
-	execute_process(COMMAND ${CMAKE_COMMAND} --build . --target mlir-translate --parallel WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/out/mlir/_build)	
-	execute_process(COMMAND ${CMAKE_COMMAND} --build . --target mlir-lsp-server --parallel WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/out/mlir/_build)	
+	execute_process(COMMAND ${CMAKE_COMMAND} --build . --target mlir-headers --config Release --parallel WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/out/mlir/_build)	
+	execute_process(COMMAND ${CMAKE_COMMAND} --build . --target mlir-libraries --config Release --parallel WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/out/mlir/_build)	
+	execute_process(COMMAND ${CMAKE_COMMAND} --build . --target mlir-tblgen --config Release --parallel WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/out/mlir/_build)	
+	execute_process(COMMAND ${CMAKE_COMMAND} --build . --target mlir-opt --config Release --parallel WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/out/mlir/_build)	
+	execute_process(COMMAND ${CMAKE_COMMAND} --build . --target mlir-translate --config Release --parallel WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/out/mlir/_build)	
+	execute_process(COMMAND ${CMAKE_COMMAND} --build . --target install --config Release --parallel WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/out/mlir/_build)	
+	
 	message(STATUS " MLIR Building done")
 endif()
 

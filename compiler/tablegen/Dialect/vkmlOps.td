@@ -14,10 +14,26 @@ include "mlir/Interfaces/SideEffectInterfaces.td"
 
 class VKML_Op<string mnemonic, list<Trait> traits = []>
     : Op<VKML_Dialect, mnemonic, traits> {
-
+     
 }
 
 
 
+
+def VKML_Add_Op : VKML_Op<"add"> {
+    let summary = "Add two integers";
+    let description = [{
+        Add two integers.
+    }];
+    let arguments = (ins
+        Arg<AnyMemRef, "", [MemReadAt<0, FullEffect>]> :$lhs,
+        Arg<AnyMemRef, "", [MemReadAt<0, FullEffect>]> :$rhs
+    );
+    let results = (outs
+        Arg<AnyMemRef, "", [MemWriteAt<0, FullEffect>]>:$result
+    );
+
+    
+}
 
 #endif // VKML_OPS
