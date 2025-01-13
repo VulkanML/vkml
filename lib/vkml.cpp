@@ -4,5 +4,5 @@
 #define VKML_WRAPPER_SYMBOL_EXPORT __attribute__((visibility("default")))
 #endif // _WIN31
 
-#include "vkml_compiler.h"
+#include "vkml.h"
 

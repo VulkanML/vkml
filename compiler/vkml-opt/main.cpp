@@ -6,6 +6,5 @@
 int main(int argc, char** argv) {
 	mlir::DialectRegistry registry;
 	mlir::registerCanonicalizerPass();
-	vkml::registerDialects(registry);
 	return mlir::asMainReturnCode(mlir::MlirOptMain(argc, argv, "VKML Optimizer driver\n", registry));
 }
