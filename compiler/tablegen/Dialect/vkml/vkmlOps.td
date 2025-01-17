@@ -17,9 +17,6 @@ class VKML_Op<string mnemonic, list<Trait> traits = []>
      
 }
 
-
-
-
 def VKML_Add_Op : VKML_Op<"add"> {
     let summary = "Add two integers";
     let description = [{
@@ -32,8 +29,8 @@ def VKML_Add_Op : VKML_Op<"add"> {
     let results = (outs
         Arg<AnyMemRef, "", [MemWriteAt<0, FullEffect>]>:$result
     );
-
-    
 }
+
+
 
 #endif // VKML_OPS

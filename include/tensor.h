@@ -6,7 +6,6 @@
 #include <string>
 
 
-
 enum class TYPES {
     UNKOWN,
     BOOL,
@@ -51,8 +50,6 @@ public:
         return *this;
     }
 
-    
-
     //virtual std::string get_key() const = 0;
     //std::unique_ptr<Expression> memoized_deriv(const std::vector<Expression*>& vars)  {
     //    std::string key = get_key() + "_deriv";
@@ -89,7 +86,6 @@ class tensor : public Expression {
 TYPES tensor<bool>::get_type() {
     return TYPES::BOOL;
 }
-
 
 TYPES tensor<char>::get_type() {
     return TYPES::CHAR;
@@ -143,4 +139,5 @@ TYPES tensor<long double>::get_type() {
     return TYPES::LDOUBLE;
 }
 
-#endif
+
+#endif // TENSOR_H

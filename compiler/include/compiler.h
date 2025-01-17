@@ -3,8 +3,10 @@
 #pragma warning( disable : 4996 )
 #pragma warning( disable : 4834 )
 #pragma warning( disable : 4146 )
+#pragma warning( disable : 4530 )
 
 #include <mlir/Support/LLVM.h>
+#include <mlir/Conversion/Passes.h>
 
 #include <mlir/Pass/Pass.h>
 #include <mlir/Pass/PassManager.h>
@@ -17,18 +19,19 @@
 #include <mlir/IR/OperationSupport.h>
 
 #include <mlir/Dialect/MemRef/IR/MemRef.h>
+#include "mlir/Dialect/MemRef/Transforms/Passes.h"
+
 #include <mlir/Dialect/Arith/IR/Arith.h>
 #include <mlir/Dialect/Func/IR/FuncOps.h>
 #include <mlir/Dialect/GPU/IR/GPUDialect.h>
+#include <mlir/Dialect/GPU/Transforms/Passes.h>
+
 #include <mlir/Dialect/SPIRV/IR/SPIRVDialect.h>
 #include <mlir/Dialect/SPIRV/Transforms/Passes.h>
 #include <mlir/Dialect/SPIRV/IR/TargetAndABI.h>
 #include <mlir/Dialect/SPIRV/IR/SPIRVOps.h>
-#include <mlir/Dialect/GPU/Transforms/Passes.h>
 
 #include <mlir/Target/SPIRV/Target.h>
-
-#include <mlir/Conversion/Passes.h>
 
 
 namespace vkml {
@@ -39,37 +42,47 @@ namespace vkml {
         if (!module)
             return nullptr;
         PassManager pm(op->getContext());
-        
+
         pm.addPass(createGpuKernelOutliningPass());
+        pm.addPass(memref::createFoldMemRefAliasOpsPass());
         
-
-        pm.addPass(createGpuSPIRVAttachTarget());
-        pm.addPass(createConvertToSPIRVPass());
-
-        OpPassManager& spirvModulePM =
-            pm.nest<gpu::GPUModuleOp>().nest<spirv::ModuleOp>();
-        spirvModulePM.addPass(spirv::createSPIRVLowerABIAttributesPass());
-        spirvModulePM.addPass(spirv::createSPIRVUpdateVCEPass());
+        ConvertToSPIRVPassOptions convGpuOptions;
+        convGpuOptions.convertGPUModules = true;
+        convGpuOptions.nestInGPUModule = true;
+        convGpuOptions.runSignatureConversion = true;
+        convGpuOptions.runVectorUnrolling = false;
+        pm.addPass(createConvertToSPIRVPass(convGpuOptions));
         
+		OpPassManager& spirPM = pm.nest<gpu::GPUModuleOp>().nest<spirv::ModuleOp>();
+        spirPM.addPass(spirv::createSPIRVLowerABIAttributesPass());
+        spirPM.addPass(spirv::createSPIRVUpdateVCEPass());
+
+
+
         pm.addPass(createGpuModuleToBinaryPass());
-        pm.addPass(createConvertGpuLaunchFuncToVulkanLaunchFuncPass());
-        // pm.addPass(spirv::createSPIRVLowerABIAttributesPass());
-        //pm.addPass(createConvertVulkanLaunchFuncToVulkanCallsPass());
 
+        // pm.addPass(createConvertGpuLaunchFuncToVulkanLaunchFuncPass());
 
-        pm.run(module);
-        return module.getOperation();
+		if (failed(pm.run(module)))
+			return nullptr;
+		return module;
+     
     }
 
-    static spirv::TargetEnvAttr registerTargetEnv(MLIRContext* ctx,
-        const llvm::SmallVector<spirv::Extension>& extensions,
-        const llvm::SmallVector<spirv::Capability>& capabilities) {
+    static spirv::TargetEnvAttr registerTargetEnv(MLIRContext* ctx) {
         Builder builder(ctx);
 
         auto ver = spirv::VerCapExtAttr::get(
             spirv::Version::V_1_6,
-            capabilities,
-            extensions,
+            {
+                spirv::Capability::Shader,
+            },
+            {
+               spirv::Extension::SPV_KHR_storage_buffer_storage_class,
+               spirv::Extension::SPV_KHR_cooperative_matrix,
+               spirv::Extension::SPV_KHR_8bit_storage,
+               spirv::Extension::SPV_KHR_16bit_storage
+            },
             ctx);
 
         int max_compute_shared_memory_size = 1024;
@@ -109,43 +122,22 @@ namespace vkml {
 
 
 	inline ModuleOp initalize(MLIRContext& ctx) {
-        spirv::registerSPIRVTargetInterfaceExternalModels(ctx);
         ctx.loadDialect<gpu::GPUDialect, func::FuncDialect, arith::ArithDialect, memref::MemRefDialect, spirv::SPIRVDialect>();
         OpBuilder builder(&ctx);
         auto mod = builder.create<ModuleOp>(builder.getUnknownLoc());
+        spirv::registerSPIRVTargetInterfaceExternalModels(ctx);
         mod->setAttr(gpu::GPUDialect::getContainerModuleAttrName(), builder.getUnitAttr());
-        auto targetAttr = vkml::registerTargetEnv(&ctx,
-        {
-            spirv::Extension::SPV_KHR_storage_buffer_storage_class,
-            spirv::Extension::SPV_KHR_cooperative_matrix,
-            spirv::Extension::SPV_KHR_8bit_storage,
-            spirv::Extension::SPV_KHR_16bit_storage
-        },
-        {
-            spirv::Capability::Shader,
-            spirv::Capability::CooperativeMatrixKHR,
-            spirv::Capability::Float16,
-            spirv::Capability::Float64,
-            spirv::Capability::Int8,
-            spirv::Capability::Int16,
-			spirv::Capability::Int64,
-            spirv::Capability::StorageUniform16,
-            spirv::Capability::StorageBuffer8BitAccess,
-            spirv::Capability::Float16Buffer
-        });
-
-        mod->setAttr(spirv::getTargetEnvAttrName(), targetAttr);
+        mod->setAttr(spirv::getTargetEnvAttrName(), registerTargetEnv(&ctx));
         return mod;
 	}
 
-	inline gpu::GPUModuleOp createGpuModule(ModuleOp mod) {
-		OpBuilder builder(mod.getContext());
-		auto gpu_mod = builder.create<gpu::GPUModuleOp>(builder.getUnknownLoc(), "kernels");
-		mod.push_back(gpu_mod);
-		return gpu_mod;
+	inline gpu::GPUModuleOp createGpuModule(ModuleOp global_mod) {
+		OpBuilder builder(global_mod.getContext());
+		auto ctx = global_mod.getContext();
+        auto mod = builder.create<gpu::GPUModuleOp>(builder.getUnknownLoc(), "kernels");       
+        mod->setAttr(spirv::getTargetEnvAttrName(), registerTargetEnv(ctx));
+        return mod;
 	}
-
-
 
 }
 
