@@ -1,7 +1,7 @@
 [submodule "runtime"]
 	path = runtime
-	url = https://github.com/VulkanML/vkml-runtime
+	url = https://github.com/VulkanML/vkml-runtime.git
 [submodule "compiler"]
 	path = compiler
-	url = https://github.com/VulkanML/vkml-compiler
+	url = https://github.com/VulkanML/vkml-compiler.git
 	
