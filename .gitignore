@@ -32,7 +32,7 @@
 *.app
 
 # Development folders
-build
+
 out
 *.inc
 .vs/
