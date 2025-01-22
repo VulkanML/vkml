@@ -1,29 +1,12 @@
 #ifndef TENSOR_H
 #define TENSOR_H
+
+#include "types.h"
+
 #include <vector>
 #include <memory>
 #include <unordered_map>
 #include <string>
-
-
-enum class TYPES {
-    UNKOWN,
-    BOOL,
-    CHAR,
-    UCHAR,
-    SHORT,
-    USHORT,
-    INT,
-	UINT,
-    LONG,
-    ULONG,
-	LONGLONG,
-	ULONGLONG,
-	FLOAT,
-	DOUBLE,
-	LDOUBLE,
-    COUNT
-};
 
 
 class Expression {
@@ -64,12 +47,6 @@ public:
     //}
 };
 
-template<typename T>
-class constant : public Expression {
-    T value;
-public: 
-    constant(T value) : value(value) {}
-};
 
 template<typename T>
 class tensor : public Expression {
@@ -138,6 +115,19 @@ TYPES tensor<double>::get_type() {
 TYPES tensor<long double>::get_type() {
     return TYPES::LDOUBLE;
 }
+
+`
+template<typename T>
+class sparse_tensor : public tensor<T>{
+    SparseFormat format;
+    tensor<int> indices;
+
+public:
+    sparse_tensor(SparseFormat format, const std::vector<int> &shape, const std::vector<int> &indices):
+        tensor<T>(shape), format(format), indices(tensor<int>(indices)) {};
+    SparseFormat get_format();       
+};
+
 
 
 #endif // TENSOR_H

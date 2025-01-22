@@ -3,7 +3,7 @@
 #
 cmake_minimum_required (VERSION 3.12)
 
-project ("vkml" VERSION 0.1 LANGUAGES C CXX)
+project ("vkml")
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
   cmake_policy(SET CMP0141 NEW)
@@ -20,11 +20,14 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${HEADERS})
 file(GLOB_RECURSE SOURCE CONFIGURE_DEPENDS "lib/*.cpp" )
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCE})
 
-add_subdirectory(compiler)
 
-add_library(vkml_lib STATIC ${HEADERS} ${SOURCE})
-target_include_directories(vkml_lib PUBLIC ${VKML_INCLUDE_DIRS} )
-target_link_libraries(vkml_lib PUBLIC vkml_mlir_compiler)
+add_subdirectory(compiler)
+add_subdirectory(runtime)
+add_library(vkml-lib STATIC ${HEADERS} ${SOURCE})
+
+target_link_libraries(vkml-lib vkml-rt)
+# target_link_libraries(vkml-lib vkml-compiler)
+target_include_directories(vkml-lib PUBLIC ${VKML_INCLUDE_DIRS} )
 
 # add_executable(dev dev/main.cpp)
 # target_include_directories(dev PUBLIC ${VKML_INCLUDE_DIRS} )
