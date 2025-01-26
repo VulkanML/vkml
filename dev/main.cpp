@@ -6,8 +6,11 @@
 //using namespace llvm;
 
 int main() {
-	define_device_attributes();
-	
+	vkml::tensor<float> t1({ 10, 200, 120, 1 });
+	vkml::tensor<float> t2({ 10, 1024, 120, 1 });
+	auto t3 = vkml::abs(t1);
+
+	return 0;
 }
 
 

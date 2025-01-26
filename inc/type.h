@@ -2,7 +2,9 @@
 enum class SparseFormat{
     COO,
     CSR,
-    CSC
+    CSC,
+    BSR,
+    BSC,
 };
 
 enum class TYPES {
@@ -18,10 +20,20 @@ enum class TYPES {
     ULONG,
     LONGLONG,
     ULONGLONG,
+    HALF,
     FLOAT,
     DOUBLE,
     LDOUBLE,
     COUNT
+};
+
+enum class BITWISE_TYPE {
+	BITWISE_AND,
+	BITWISE_OR,
+	BITWISE_XOR,
+	BITWISE_NOT,
+	BITWISE_LSHIFT,
+	BITWISE_RSHIFT
 };
 
 enum class BINARY_ARITH_TYPE {
@@ -66,7 +78,8 @@ enum class UNARY_ARITH_TYPE {
     ARITH_CEIL,
     ARITH_FLOOR,
     ARITH_ROUND,
-    ARITH_TRUNC       
+    ARITH_TRUNC
+
 };
 
 enum class LOGICAL_TYPE {
@@ -96,3 +109,17 @@ enum class INDEX_TYPE{
     EXPAND
 };
 
+enum class BLAS_TYPE {
+    MATMUL,
+    GEMM,
+    GEMV,
+    CONVOLUTION,
+    DWCONVOLUTION,
+    GROUPCONVOLUTION,
+    TRANSPOSE_CONVOLUTION
+};
+
+
+enum class DATA_OP {
+    CAST
+};

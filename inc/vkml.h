@@ -6,28 +6,35 @@
 #pragma warning( disable : 4530 )
 #ifndef vkml_H
 #define vkml_H
-#include "tensor.h"
-#include "layers.h"
-#include "vkml_compiler.h"
-
+#include "compiler.h"
 #include "vkrt.h"
 
-auto vkInst = vkrt::Instance();
-auto compInst = vkml_compiler::compiler();
+
+auto vkInst = runtime::Instance();
+auto compInst = compiler::Compiler();
 
 void define_device_attributes() {
 	
 	for (auto i = 0; i < vkInst.get_device_count(); ++i)
 	{
-		auto dev = vkInst.get_device(i);
-		auto capabilities = dev.getDeviceCapabilities();
-		auto device_type_id = dev.getDeviceType();
-		auto extensions = dev.getSupportedExtensions();
-		auto resource_limits = dev.getResourceLimits();
-
-		compInst.addDevice(i, dev.getVendorID(), device_type_id, resource_limits, capabilities, extensions);
+		auto& dev = vkInst.get_device(i);
+		compInst.addDevice(i, 
+			dev.getVendorID(), 
+			dev.getDeviceType(),
+			dev.getResourceLimits(),
+			dev.getDeviceCapabilities(),
+			dev.getSupportedExtensions() );
 	}
+
 }
+
+void compile_module() {
+	compInst.run();
+}
+
+#include "tensor.h"
+#include "layers.h"
+
 
 
 
