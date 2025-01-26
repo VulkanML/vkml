@@ -35,7 +35,8 @@
         {
             "name": "linux64-debug",
             "configurePreset": "linux64",
-            "configuration": "Debug"
+            "configuration": "Debug",
+            "jobs": 24
         }
     ]
 }

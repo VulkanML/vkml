@@ -15,10 +15,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(${TARGET_NAME} LANGUAGES CXX C)
 
 add_subdirectory(compiler)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/compiler/inc)
 add_subdirectory(runtime)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/runtime/inc)
 
 file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "inc/*.h" "inc/*.hpp" )
-set(VKML_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/inc)
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${HEADERS})
 file(GLOB_RECURSE SOURCE CONFIGURE_DEPENDS "lib/*.cpp" )
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCE})
@@ -26,10 +27,27 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCE})
 
 add_library(vkml-lib STATIC ${HEADERS} ${SOURCE})
 
-target_link_libraries(vkml-lib vkml-rt)
-target_link_libraries(vkml-lib vkml-compiler)
-target_include_directories(vkml-lib PUBLIC ${VKML_INCLUDE_DIRS} )
+target_link_libraries(vkml-lib PUBLIC vkml-rt)
+target_link_libraries(vkml-lib PUBLIC vkml-compiler)
+target_include_directories(vkml-lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
+target_include_directories(vkml-lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/compiler/inc)
+target_include_directories(vkml-lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/runtime/inc)
+target_include_directories(vkml-lib PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/compiler/tablegen )
+get_property(vkml_compiler_headers GLOBAL PROPERTY VKML_COMPILER_HEADERS)
+get_property(vkrt_headers GLOBAL PROPERTY VKRT_HEADERS)
+target_include_directories(vkml-lib PUBLIC ${vkrt_headers})
+target_include_directories(vkml-lib PUBLIC ${vkml_compiler_headers})
+
+
+set_property(GLOBAL PROPERTY VKML_HEADERS
+${CMAKE_CURRENT_SOURCE_DIR}/inc ${CMAKE_CURRENT_SOURCE_DIR}/compiler/inc ${CMAKE_CURRENT_SOURCE_DIR}/runtime/inc
+${CMAKE_CURRENT_BINARY_DIR}/compiler/tablegen ${vkml_compiler_headers})
+
+get_property(vkml-headers GLOBAL PROPERTY VKML_HEADERS)
+get_property(vkrt-headers GLOBAL PROPERTY VKRT_HEADERS)
+
 
 add_executable(dev dev/main.cpp)
-target_include_directories(dev PUBLIC ${VKML_INCLUDE_DIRS} )
+target_include_directories(dev PRIVATE ${vkml-headers} ${vkrt-headers})
 target_link_libraries(dev PRIVATE vkml_lib)
+

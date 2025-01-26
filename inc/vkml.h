@@ -8,8 +8,8 @@
 #define vkml_H
 #include "tensor.h"
 #include "layers.h"
-#include "vkml_compiler.h"
 
+#include "vkml_compiler.h"
 #include "vkrt.h"
 
 auto vkInst = vkrt::Instance();

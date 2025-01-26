@@ -37,4 +37,6 @@ out
 *.inc
 .vs/
 .vscode/
-
+/out
+.aider*
+.env
