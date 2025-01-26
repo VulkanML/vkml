@@ -1,11 +1,17 @@
 #include "vkml.h"
 #include <fstream>
 
-
-using namespace mlir;
-using namespace llvm;
+//
+//using namespace mlir;
+//using namespace llvm;
 
 int main() {
+	define_device_attributes();
+	
+}
+
+
+/*
 	MLIRContext ctx;
 	auto mod = vkml::initalize(ctx);
 	auto gpu_mod = vkml::createGpuModule(mod);
@@ -62,7 +68,7 @@ int main() {
 		funcOp,
 		grid_size, // grid_size in (%cst1, %cst1, %cst1)
 		block_size, // block_size in (%cst8, %cst1, %cst1)
-		mlir::Value{}, /*dynamicSharedMemorySize*/
+		mlir::Value{}, /*dynamicSharedMemorySize
 		main_func_op.getArguments()
 	);
 
@@ -98,10 +104,6 @@ int main() {
 	mod22->dump();
 
 	return 0;
-}
-
-
-/*
 static spirv::TargetEnvAttr registerTargetEnv(MLIRContext* ctx) {
 		Builder builder(ctx);
 

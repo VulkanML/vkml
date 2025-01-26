@@ -14,21 +14,22 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(${TARGET_NAME} LANGUAGES CXX C)
 
+add_subdirectory(compiler)
+add_subdirectory(runtime)
+
 file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "inc/*.h" "inc/*.hpp" )
-set(VKML_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(VKML_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/inc)
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${HEADERS})
 file(GLOB_RECURSE SOURCE CONFIGURE_DEPENDS "lib/*.cpp" )
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCE})
 
 
-add_subdirectory(compiler)
-add_subdirectory(runtime)
 add_library(vkml-lib STATIC ${HEADERS} ${SOURCE})
 
 target_link_libraries(vkml-lib vkml-rt)
-# target_link_libraries(vkml-lib vkml-compiler)
+target_link_libraries(vkml-lib vkml-compiler)
 target_include_directories(vkml-lib PUBLIC ${VKML_INCLUDE_DIRS} )
 
-# add_executable(dev dev/main.cpp)
-# target_include_directories(dev PUBLIC ${VKML_INCLUDE_DIRS} )
-# target_link_libraries(dev PRIVATE vkml_lib)
+add_executable(dev dev/main.cpp)
+target_include_directories(dev PUBLIC ${VKML_INCLUDE_DIRS} )
+target_link_libraries(dev PRIVATE vkml_lib)

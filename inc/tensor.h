@@ -1,7 +1,7 @@
 #ifndef TENSOR_H
 #define TENSOR_H
 
-#include "types.h"
+#include "type.h"
 
 #include <vector>
 #include <memory>
@@ -116,7 +116,7 @@ TYPES tensor<long double>::get_type() {
     return TYPES::LDOUBLE;
 }
 
-`
+
 template<typename T>
 class sparse_tensor : public tensor<T>{
     SparseFormat format;
