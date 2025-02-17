@@ -51,17 +51,18 @@ namespace vkml {
 
     };
 
-
+    static size_t tensor_id = 0;
     template<typename T>
     class tensor : public Expression {
-        std::vector<int> shape;
+        std::vector<int64_t> shape;
         T value;
-        mlir::memref::AllocOp memrefOp;
+        std::string name;
     public:
         tensor() {}
         auto get_shape() const { return shape; }
-        tensor(const std::vector<int>& shape) : shape(shape) {
-            compInst.addTensor("", shape, get_type(), 0);
+        auto get_name() const { return name; }
+        tensor(const std::vector<int64_t>& shape) : shape(shape), name("tensor_" + std::to_string(tensor_id++)) {
+            compInst.addTensor(name, this->shape, (uint32_t)get_type(), (uint32_t)0);
         };
         TYPES get_type();
     };
@@ -133,11 +134,14 @@ namespace vkml {
             tensor<T>(shape), format(format), indices(tensor<int>(indices)) {};
         SparseFormat get_format() const { return format; }
     };
-    
+
+
+    static size_t op_id = 0;
     template<typename T>
     static tensor<T> abs(tensor<T>& self, bool inplace = false) {
-
-        return tensor<T>(self.get_shape());
+        tensor<T> result(self.get_shape());
+        compInst.addOp(0, "abs_" + self.get_name(), self.get_name());
+        return result;
     }
 
 }

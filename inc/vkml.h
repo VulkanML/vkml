@@ -7,7 +7,7 @@
 #ifndef vkml_H
 #define vkml_H
 #include "compiler.h"
-#include "vkrt.h"
+#include "runtime.h"
 
 
 auto vkInst = runtime::Instance();
@@ -30,12 +30,11 @@ void define_device_attributes() {
 
 void compile_module() {
 	compInst.run();
+	compInst.dump();
 }
 
 #include "tensor.h"
 #include "layers.h"
-
-
 
 
 #endif
