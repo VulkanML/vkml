@@ -8,7 +8,9 @@
 int main() {
 	vkml::tensor<float> t1({ 10, 200, 120, 1 });
 	vkml::tensor<float> t2({ 10, 1024, 120, 1 });
-	auto t3 = vkml::abs(t1);
+	auto t3 = vkml::neg(t1);
+	auto t4 = vkml::abs(t3);
+	auto t5 = vkml::add(t4, t3);
 	compile_module();
 	return 0;
 }

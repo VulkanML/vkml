@@ -64,6 +64,7 @@ namespace vkml {
         tensor(const std::vector<int64_t>& shape) : shape(shape), name("tensor_" + std::to_string(tensor_id++)) {
             compInst.addTensor(name, this->shape, (uint32_t)get_type(), (uint32_t)0);
         };
+        tensor(const std::vector<int64_t>& shape, std::string name) : shape(shape), name(name) { };
         TYPES get_type();
     };
 
@@ -135,16 +136,6 @@ namespace vkml {
         SparseFormat get_format() const { return format; }
     };
 
-
-    static size_t op_id = 0;
-    template<typename T>
-    static tensor<T> abs(tensor<T>& self, bool inplace = false) {
-        tensor<T> result(self.get_shape());
-        compInst.addOp(0, "abs_" + self.get_name(), self.get_name());
-        return result;
-    }
-
 }
-
 
 #endif // TENSOR_H
