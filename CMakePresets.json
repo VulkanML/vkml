@@ -21,8 +21,8 @@
             "cacheVariables": {
                 "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
                 "CMAKE_C_COMPILER": "/usr/bin/gcc",
-                "CMAKE_CXX_COMPILER": "/usr/bin/g++",               
-                "CMAKE_BUILD_TYPE": "Debug" 
+                "CMAKE_CXX_COMPILER": "/usr/bin/g++",
+                "CMAKE_BUILD_TYPE": "Debug"
             }
         }
     ],
@@ -36,7 +36,13 @@
             "name": "linux64-debug",
             "configurePreset": "linux64",
             "configuration": "Debug"
-       
+        },
+        {
+            "name": "ninja",
+            "description": "",
+            "displayName": "",
+            "configurePreset": "win64",
+            "configuration": "Debug"      
         }
     ]
 }
