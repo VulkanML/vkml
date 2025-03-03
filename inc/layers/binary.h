@@ -6,7 +6,7 @@ namespace vkml {
     template<typename T, typename T2, BINARY_ARITH_TYPE type>
     static tensor<T> binary_operation(tensor<T>& self, tensor<T2>& other, bool inplace = false) {
         std::string op_name = "binary_" + std::to_string(bin_op_id++) + " " + self.get_name();
-        compInst.addOp((size_t)type, op_name, self.get_name(), other.get_name());
+        vkml_instance.addBinaryOp((size_t)type, op_name, self.get_name(), other.get_name());
         return tensor<T>(self.get_shape(), op_name);
     }
 

@@ -1,5 +1,5 @@
 {
-    "version": 3,
+    "version": 8,
     "configurePresets": [
         {
             "name": "win64",
@@ -13,17 +13,6 @@
                 "CMAKE_C_COMPILER": "cl.exe",
                 "CMAKE_CXX_COMPILER": "cl.exe"
             }
-        },
-        {
-            "name": "linux64",
-            "description": "Using compilers: C = /usr/bin/gcc, CXX = /usr/bin/g++",
-            "binaryDir": "${sourceDir}/out/build/${presetName}",
-            "cacheVariables": {
-                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
-                "CMAKE_C_COMPILER": "/usr/bin/gcc",
-                "CMAKE_CXX_COMPILER": "/usr/bin/g++",
-                "CMAKE_BUILD_TYPE": "Debug"
-            }
         }
     ],
     "buildPresets": [
@@ -33,16 +22,15 @@
             "configuration": "Debug"
         },
         {
-            "name": "linux64-debug",
-            "configurePreset": "linux64",
-            "configuration": "Debug"
+            "name": "win64-relWithDebInfo",
+            "configurePreset": "win64",
+            "configuration": "RelWithDebInfo"
         },
         {
-            "name": "ninja",
-            "description": "",
-            "displayName": "",
+            "name": "win64-Release",
             "configurePreset": "win64",
-            "configuration": "Debug"      
+            "configuration": "Release"
         }
     ]
+  
 }

@@ -1,13 +1,14 @@
 #ifndef UNARY_H
 #define UNARY_H
 
+#include <type_traits>
 
 namespace vkml {
-    static size_t op_id = 0;
+    static size_t unary_op_id = 0;
     template<typename T, UNARY_ARITH_TYPE type>
     static tensor<T> unary_operation(tensor<T>& self, bool inplace = false) {
-        std::string op_name = "unary_" + std::to_string(op_id++) + " " + self.get_name();
-        compInst.addOp((size_t)type, op_name, self.get_name());
+        std::string op_name = "unary_" + std::to_string(unary_op_id++) + " " + self.get_name();
+        vkml_instance.addUnaryOp((size_t)type, op_name, self.get_name());
         return tensor<T>(self.get_shape(), op_name);
     }
 

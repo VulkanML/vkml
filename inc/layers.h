@@ -1,3 +1,6 @@
-#include "tensor.h"
-#include "layers/unary.h"
+#include "layers/bitwise.h"
 #include "layers/binary.h"
+#include "layers/logical.h"
+#include "layers/reduction.h"
+#include "layers/relational.h"
+#include "layers/unary.h"

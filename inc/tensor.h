@@ -51,27 +51,22 @@ namespace vkml {
 
     };
 
-    static size_t tensor_id = 0;
+    static size_t tensor_id = 0;       
     template<typename T>
     class tensor : public Expression {
         std::vector<int64_t> shape;
-        T value;
+        T value = T(); // Initialize value
         std::string name;
     public:
         tensor() {}
         auto get_shape() const { return shape; }
         auto get_name() const { return name; }
         tensor(const std::vector<int64_t>& shape) : shape(shape), name("tensor_" + std::to_string(tensor_id++)) {
-            compInst.addTensor(name, this->shape, (uint32_t)get_type(), (uint32_t)0);
+            vkml::vkml_instance.addEmptyTensor(name, this->shape, (uint32_t)get_type(), (uint32_t)0);
         };
         tensor(const std::vector<int64_t>& shape, std::string name) : shape(shape), name(name) { };
         TYPES get_type();
     };
-
-        
-    TYPES tensor<bool>::get_type() {
-        return TYPES::BOOL;
-    }
 
     TYPES tensor<char>::get_type() {
         return TYPES::CHAR;

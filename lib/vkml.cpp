@@ -6,3 +6,7 @@
 
 #include "vkml.h"
 
+namespace vkml {
+    runtime::Instance vkml::instance::runtime_instance;
+    compiler::Compiler vkml::instance::compiler_instance;
+}
